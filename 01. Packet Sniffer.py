@@ -9,3 +9,9 @@ import textwrap
 def ethernetFrame(data):
     destMac, sourceMac, proto = struct.unpack('! 6s 6s H', data[:14])  # Standardise the first 14 parts of input as 6 bytes, 6 bytes, small unsigned int and store in 3 variables
     return getMacAddress(destMac), getMacAddress(sourceMac), socket.htons(proto), data[14:]
+
+# Properly format MAC address into upper case hexadecimal as opposed to bytes
+def getMacAddress(bytesAddress):
+    bytesString = map('{:02x}'.format, bytesAddress)
+    return ':'.join(bytesString).upper()
+    
