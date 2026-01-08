@@ -1,4 +1,5 @@
 # Written following this tutorial: https://www.youtube.com/watch?v=WGJC5vT5YJo&list=PL6gx4Cwl9DGDdduy0IPDDHYnUx66Vc4ed. I added some extra comments to test my understanding of the code
+# Disclaimer: this program was made for display purposes. Packet sniffing without consent is illegal
 
 # Import libraries. Socket is for packet handling, struct is for converting bytes to data structures, textwrap is for consistent formatting
 import socket
@@ -10,8 +11,6 @@ def main():  # Runs forever, captures data packets, then calls the other functio
     while True:
         rawData, address = conn.recvfrom(65535)
         destMac, sourceMac, ethProto, data = ethernetFrame(rawData)
-        
-        # The next two lines are used for debugging purposes. As I am not on a Linux system, I cannot run this program as it currently is. However, I am going to test this on a Linux system to verify it works
         print("\nEthernet frame: ")
         print("Destination: {}, Source: {}, Protocol: {}".format(destMac, sourceMac, ethProto))
 
@@ -24,5 +23,13 @@ def ethernetFrame(data):
 def getMacAddress(bytesAddress):
     bytesString = map('{:02x}'.format, bytesAddress)
     return ':'.join(bytesString).upper()
+    
+# Unpacks IPv4 packets
+def ipv4Packet(data):
+    versionHeaderLength = data[0]
+    version = versionHeaderLength >> 4
+    headerLength = (versionHeaderLength & 15) * 4
+    timeToLive, protocol, source, target = struct.unpack('! 8x B B 2x 4s 4s', data[:20])
+    return version, headerLength, timeToLive, protocol, ipv4(source), ipv4(target), data[headerLength:]
     
 main()
