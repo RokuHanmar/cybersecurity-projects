@@ -32,4 +32,24 @@ def ipv4Packet(data):
     timeToLive, protocol, source, target = struct.unpack('! 8x B B 2x 4s 4s', data[:20])
     return version, headerLength, timeToLive, protocol, ipv4(source), ipv4(target), data[headerLength:]
     
+    
+# Unpacks ICMP packets
+def icmpPacket(data):
+    icmpType, code, checksum = struct.unpack('! B B H', data[:4])
+    return icmpType, code, checksum, data[4:]
+
+# Unpacks the TCP segment
+def tcpSegment(data):
+    (sourcePort, destPort, sequence, acknowledgement, offsetReservedFlags) = struct.unpack('! H H L L H', data[:14])
+    offset = (offsetReservedFlags >> 12) * 4
+    flagUrg = (offsetReservedFlags & 32) >> 5
+    flagAck = (offsetReservedFlags & 16) >> 4
+    flagPsh = (offsetReservedFlags & 8) >> 3
+    flagRst = (offsetReservedFlags & 4) >> 2
+    flagSyn = (offsetReservedFlags & 2) >> 1
+    flagFin = offsetReservedFlags & 1
+    
+    return sourcePort, destPort, sequence, acknowledgement, flagUrg, flagAck, flagPsh, flagRst, flagSyn, flagFin, data[offset:]
+
+# Call main function
 main()
