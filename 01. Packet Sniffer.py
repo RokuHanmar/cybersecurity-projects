@@ -1,4 +1,5 @@
 # Written following this tutorial: https://www.youtube.com/watch?v=WGJC5vT5YJo&list=PL6gx4Cwl9DGDdduy0IPDDHYnUx66Vc4ed. I added some extra comments to test my understanding of the code
+# Designed for Linux systems. Designed with sudo in mind
 # Disclaimer: this program was made for display purposes. Packet sniffing without consent is illegal
 
 # Import libraries. Socket is for packet handling, struct is for converting bytes to data structures, textwrap is for consistent formatting
@@ -20,6 +21,34 @@ def main():  # Runs forever, captures data packets, then calls the other functio
             print("Version: {}, Header Length: {}, Time to Live: {}".format(version, headerLength, timeToLive))
             print("Protocol: {}, Source: {}, Target: {}".format(protocol, source, target))
             
+            if protocol == 1:  # 1 represents ICMP
+                (icmpType, code, checksum, data) = icmpPacket(data)
+                print("ICMP Packet:")
+                print("ICMP Type: {}, Code: {}, Checksum: {}".format(icmpType, code, checksum))
+                print("Data: {}".format(data))
+                
+            elif protocol == 6:  # 6 represents TCP
+                (sourcePort, destPort, sequence, acknowledgement, offsetReservedFlags, data) = tcpSegment(data)
+                print("TCP Segment:")
+                print("Source Port: {}, Destination Port: {}, Sequence: {}".format(sourcePort, destPort, sequence))
+                print("Acknowledgement: {}, Offset Reserved Flags: {}".format(acknowledgement, offsetReservedFlags))
+                print("Data: {}".format(data))
+                
+            elif protocol == 17:  # 17 represents UDP
+                (sourcePort, destPort, size, data) = udpPacket(data)
+                print("UDP Packet:")
+                print("Source Port: {}, Destination Port: {}, Size: {}".format(sourcePort, destPort, size))
+                print("Data: {}".format(data))
+                
+            else:  # Error handling
+                print("Data: ")
+                print(formatMultiLineData(data))
+
+        else:  # Error handling
+            print("Data: ")
+            print(formatMultiLineData(data))
+
+
 # Unpack ethernet frame
 def ethernetFrame(data):
     destMac, sourceMac, proto = struct.unpack('! 6s 6s H', data[:14])  # Standardise the first 14 parts of input as 6 bytes, 6 bytes, small unsigned int and store in 3 variables
@@ -73,3 +102,12 @@ def formatMultiLineData(prefix, string, size=80):
 
 # Call main function
 main()
+
+""" What did I learn from this tutorial?
+
+    1. How to use the Socket and Struct libraries
+    2. The way Windows and Linux handle networks is different
+    3. Following on from point 2, that specific Python commands will not work on certain operating systems
+    4. How to use the .format command to inline variables the way they're inlined in C
+    5. How to inline a for loop
+"""
