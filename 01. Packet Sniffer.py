@@ -9,11 +9,17 @@ import textwrap
 def main():  # Runs forever, captures data packets, then calls the other functions to handle them
     connection = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))  # NOTE: AF_PACKET will not work on non-Linux operating systems
     while True:
-        rawData, address = conn.recvfrom(65535)
+        rawData, address = connection.recvfrom(65535)
         destMac, sourceMac, ethProto, data = ethernetFrame(rawData)
         print("\nEthernet frame: ")
         print("Destination: {}, Source: {}, Protocol: {}".format(destMac, sourceMac, ethProto))
-
+        
+        if ethProto == 8:  # 8 represents IPv4
+            (version, headerLength, timeToLive, protocol, source, target, data) = ipv4Packet(data)
+            print("IPv4 Packet:")
+            print("Version: {}, Header Length: {}, Time to Live: {}".format(version, headerLength, timeToLive))
+            print("Protocol: {}, Source: {}, Target: {}".format(protocol, source, target))
+            
 # Unpack ethernet frame
 def ethernetFrame(data):
     destMac, sourceMac, proto = struct.unpack('! 6s 6s H', data[:14])  # Standardise the first 14 parts of input as 6 bytes, 6 bytes, small unsigned int and store in 3 variables
@@ -50,6 +56,20 @@ def tcpSegment(data):
     flagFin = offsetReservedFlags & 1
     
     return sourcePort, destPort, sequence, acknowledgement, flagUrg, flagAck, flagPsh, flagRst, flagSyn, flagFin, data[offset:]
+
+# Unpacks UDP packets
+def udpPacket(data):
+    sourcePort, destPort, size = struct.unpack('! H H 2x H', data[:8])
+    return sourcePort, destPort, size, data[8:]
+
+# Format multiline data. 
+def formatMultiLineData(prefix, string, size=80):
+    size -= len(prefix)
+    if isinstance(string, bytes):
+        string = ''.join(r'\x{:02x}'.format(byte) for byte in string)
+        if size % 2:
+            size -= 1
+    return '\n'.join([prefix + line for line in textwrap.wrap(string.size)])
 
 # Call main function
 main()
