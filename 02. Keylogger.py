@@ -27,7 +27,8 @@ def onRelease(key):
     if key == Key.esc:
         return False
 
-# Opens a text file called "log.txt" in append mode, removes all quotation marks, and then writes logged keys to the file (adding newlines instead of spaces)
+# Opens a text file called "log.txt" in append mode, removes all quotation marks,
+# and then writes logged keys to the file (adding newlines instead of spaces and removing miscellaneous keys like backspaces)
 def writeFile(keys):
     with open("log.txt", "a") as file:
         for key in keys:
@@ -49,4 +50,5 @@ What did I learn from this tutorial?
 
     1. How to install Python libraries through CMD using pip
     2. How Windows Defender interacts with pynput, specifically with .join() and how it can prevent code termination
+    3. How to use pynput to log keys
 """
