@@ -19,6 +19,8 @@ def crackHash(inputPassword):
         if digest == inputPassword:
             print("Password found: " + password)
     
+    passFile.close()
+    
 crackHash("2ac9cb7dc02b3c0083eb70898e549b63")  # Translates to Password1
 
 
